@@ -88,7 +88,9 @@ Infrastructure secrets live only in `terraform/secrets.auto.tfvars`; see
 ## Testing
 
 Tests exercise public interfaces against the real local Supabase, with fakes
-only at external boundaries (Clerk, Anthropic). Start Supabase first.
+only at external boundaries (Clerk, Anthropic). Start Supabase first; the
+pytest suites read its URL and keys from `supabase status` unless
+`SUPABASE_SECRET_KEY` is already set.
 
 | Package | Command | What runs |
 |---|---|---|
