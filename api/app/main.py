@@ -1,5 +1,7 @@
 from fastapi import APIRouter, FastAPI
 
+from app.routers import chat
+
 app = FastAPI(title="a-stack-api")
 
 # Vercel Services forwards the full request path, so routes live under the
@@ -11,5 +13,7 @@ api = APIRouter(prefix="/api/py")
 async def health() -> dict[str, str]:
     return {"status": "ok"}
 
+
+api.include_router(chat.router)
 
 app.include_router(api)

@@ -7,6 +7,7 @@ dependencies = [
     "anthropic>=1.11.0",
     "fastapi[standard]>=0.142.2",
     "jinja2>=3.1.6",
+    "postgrest>=2.31.0",
     "pydantic-settings>=2.15.0",
     "pyjwt[crypto]>=2.15.1",
     "supabase>=2.31.0",
@@ -14,6 +15,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "httpx>=0.28.1",
     "mypy>=2.4.0",
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
@@ -38,3 +40,5 @@ select = ["E", "F", "I", "UP"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "session"
 asyncio_default_test_loop_scope = "session"
+# supabase-py passes deprecated arguments to its own sub-clients.
+filterwarnings = ["ignore::DeprecationWarning:supabase._async.client"]

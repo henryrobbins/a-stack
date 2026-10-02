@@ -16,6 +16,7 @@ dependencies = [
     { name = "anthropic" },
     { name = "fastapi", extra = ["standard"] },
     { name = "jinja2" },
+    { name = "postgrest" },
     { name = "pydantic-settings" },
     { name = "pyjwt", extra = ["crypto"] },
     { name = "supabase" },
@@ -23,6 +24,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "httpx" },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -34,6 +36,7 @@ requires-dist = [
     { name = "anthropic", specifier = ">=1.11.0" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.142.2" },
     { name = "jinja2", specifier = ">=3.1.6" },
+    { name = "postgrest", specifier = ">=2.31.0" },
     { name = "pydantic-settings", specifier = ">=2.15.0" },
     { name = "pyjwt", extras = ["crypto"], specifier = ">=2.15.1" },
     { name = "supabase", specifier = ">=2.31.0" },
@@ -41,6 +44,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "mypy", specifier = ">=2.4.0" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-asyncio", specifier = ">=1.4.0" },

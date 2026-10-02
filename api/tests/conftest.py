@@ -11,7 +11,8 @@ import os
 import subprocess
 import threading
 import uuid
-from collections.abc import AsyncIterator, Iterator
+from collections.abc import AsyncIterator, Awaitable, Callable
+from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -59,9 +60,12 @@ os.environ["CLERK_JWKS_URL"] = (
     f"http://127.0.0.1:{_jwks_server.server_port}/.well-known/jwks.json"
 )
 
-from fastapi.testclient import TestClient  # noqa: E402
-from supabase import AsyncClient, acreate_client  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
+from supabase import AsyncClient as SupabaseClient  # noqa: E402
+from supabase import acreate_client  # noqa: E402
 
+from app.auth import ClerkUser, verify_clerk_token  # noqa: E402
+from app.db import first  # noqa: E402
 from app.main import app  # noqa: E402
 
 
@@ -84,30 +88,48 @@ def supabase_token(sub: str) -> str:
     )
 
 
+@dataclass(frozen=True)
+class AppUser:
+    sub: str
+    id: str
+
+
+MakeUser = Callable[[], Awaitable[AppUser]]
+
+
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    with TestClient(app) as c:
+async def client() -> AsyncIterator[AsyncClient]:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as c:
         yield c
     app.dependency_overrides.clear()
 
 
+def act_as(user: AppUser) -> None:
+    """Authenticate API requests as `user`, with a token Supabase accepts."""
+    app.dependency_overrides[verify_clerk_token] = lambda: ClerkUser(
+        sub=user.sub, token=supabase_token(user.sub)
+    )
+
+
 @pytest.fixture
-async def admin() -> AsyncClient:
+async def admin() -> SupabaseClient:
     return await acreate_client(
         os.environ["SUPABASE_URL"], os.environ["SUPABASE_SECRET_KEY"]
     )
 
 
 @pytest.fixture
-async def make_user(admin: AsyncClient) -> AsyncIterator[object]:
+async def make_user(admin: SupabaseClient) -> AsyncIterator[MakeUser]:
     """Creates users rows; deleting them afterwards cascades to their data."""
     created: list[str] = []
 
-    async def make() -> str:
+    async def make() -> AppUser:
         sub = f"test_user_{uuid.uuid4()}"
-        await admin.table("users").insert({"clerk_user_id": sub}).execute()
+        row = first(await admin.table("users").insert({"clerk_user_id": sub}).execute())
         created.append(sub)
-        return sub
+        return AppUser(sub=sub, id=row["id"])
 
     yield make
     if created:
