@@ -1,4 +1,4 @@
-import { createClerkClient } from '@clerk/nextjs/server';
+import { createClerkClient } from '@clerk/backend';
 import { clerkSetup } from '@clerk/testing/playwright';
 
 import { createSecretClient } from '@/lib/supabase/secret';
