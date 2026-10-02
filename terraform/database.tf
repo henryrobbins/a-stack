@@ -17,6 +17,12 @@ data "supabase_apikeys" "main" {
   project_ref = supabase_project.main.id
 }
 
+# Which pooler cluster hosts a project varies, so it is read rather than
+# assumed from the region.
+data "supabase_pooler" "main" {
+  project_ref = supabase_project.main.id
+}
+
 # A secret key, held by the Clerk webhook (Vercel) and the agent worker
 # (Modal) only.
 resource "supabase_apikey" "secret" {

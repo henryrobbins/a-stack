@@ -7,6 +7,7 @@ output "supabase_env" {
   value = {
     PROD_PROJECT_REF = supabase_project.main.id
     PROD_DB_PASSWORD = var.supabase_database_password
+    PROD_POOLER_HOST = regex("@([^:/]+)", values(data.supabase_pooler.main.url)[0])[0]
   }
 }
 

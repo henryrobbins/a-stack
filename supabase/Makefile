@@ -2,10 +2,9 @@
 
 -include .env
 
-# The session-mode pooler, because the direct db.<ref>.supabase.co host
-# resolves to IPv6 only.
-POOLER_HOST = aws-1-us-east-1.pooler.supabase.com
-PROD_DB_URL = postgresql://postgres.$(PROD_PROJECT_REF):$(PROD_DB_PASSWORD)@$(POOLER_HOST):5432/postgres
+# The session-mode pooler (port 5432), because the direct db.<ref>.supabase.co
+# host resolves to IPv6 only.
+PROD_DB_URL = postgresql://postgres.$(PROD_PROJECT_REF):$(PROD_DB_PASSWORD)@$(PROD_POOLER_HOST):5432/postgres
 
 push-local:
 	supabase migration up
