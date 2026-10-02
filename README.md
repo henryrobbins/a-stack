@@ -154,10 +154,15 @@ Supabase, so production values are never set in the app env files.
    is completed in step 6.
 
 5. **Infrastructure.** Leave `clerk_webhook_signing_secret` empty for now.
+   Vercel must have a GitHub login connection (Account Settings →
+   Authentication) to link the repository.
    ```bash
    cd terraform
    terraform init && terraform apply
    ```
+   The first apply creates Clerk's DNS records, but Supabase's Clerk
+   integration fails until Clerk has issued certificates for them. Once
+   Clerk → **Domains** shows everything verified, apply again.
 
 6. **Agent secret and database.**
    ```bash
