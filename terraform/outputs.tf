@@ -12,7 +12,7 @@ output "supabase_env" {
 }
 
 output "agent_env" {
-  description = "agent/.env values for `make secrets` (Modal)"
+  description = "agent/.env.production values for `make secrets ENV_FILE=.env.production` (Modal)"
   sensitive   = true
   value = {
     SUPABASE_URL         = local.supabase_url

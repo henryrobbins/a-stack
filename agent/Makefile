@@ -18,9 +18,12 @@ serve:
 deploy:
 	uv run modal deploy agent/app.py
 
-# Creates or replaces the Modal secret from .env.
+# Creates or replaces the Modal secret from ENV_FILE (default .env); production
+# uses `make secrets ENV_FILE=.env.production`.
+ENV_FILE ?= .env
+
 secrets:
-	uv run modal secret create a-stack-agent --from-dotenv .env --force
+	uv run modal secret create a-stack-agent --from-dotenv $(ENV_FILE) --force
 
 lint:
 	uv run ruff check agent/ tests/

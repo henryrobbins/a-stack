@@ -31,7 +31,7 @@ terraform init
 terraform plan
 terraform apply
 terraform output -json supabase_env   # for supabase/.env
-terraform output -json agent_env      # for agent/.env (Modal secret)
+terraform output -json agent_env      # for agent/.env.production (Modal secret)
 ```
 
 ## Not managed here

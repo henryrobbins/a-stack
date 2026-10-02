@@ -165,12 +165,14 @@ Supabase, so production values are never set in the app env files.
 
 6. **Agent secret and database.**
    ```bash
-   terraform output -json agent_env | jq -r 'to_entries[] | "\(.key)=\(.value)"' > ../agent/.env
+   terraform output -json agent_env | jq -r 'to_entries[] | "\(.key)=\(.value)"' > ../agent/.env.production
    terraform output -json supabase_env | jq -r 'to_entries[] | "\(.key)=\(.value)"' >> ../supabase/.env
-   (cd ../agent && make secrets)
+   (cd ../agent && make secrets ENV_FILE=.env.production && make deploy)
    (cd ../supabase && make push-production)
    ```
-   This replaces your local `agent/.env`; restore the local values afterwards.
+   `agent/.env.production` is git-ignored and keeps production values apart
+   from your local `agent/.env`. Redeploying starts fresh containers with the
+   new secret.
 
 7. **Clerk webhook.** In the production instance, add the endpoint
    `https://<domain>/api/webhooks/clerk` for `user.created` and
