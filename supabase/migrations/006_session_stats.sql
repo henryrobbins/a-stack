@@ -59,3 +59,5 @@ COMMENT ON COLUMN session_stats.input_tokens IS 'Total input tokens.';
 COMMENT ON COLUMN session_stats.output_tokens IS 'Total output tokens.';
 COMMENT ON COLUMN session_stats.duration_ms IS 'First-to-last message, run time, or call time.';
 COMMENT ON COLUMN session_stats.status IS 'Run status; NULL for chats.';
+
+GRANT SELECT ON session_stats TO authenticated, service_role;

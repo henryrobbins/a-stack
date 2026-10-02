@@ -113,9 +113,11 @@ CREATE POLICY "owners update agent runs"
   USING ((SELECT current_app_user_id()) = user_id)
   WITH CHECK ((SELECT current_app_user_id()) = user_id);
 
-REVOKE INSERT, UPDATE ON agent_runs FROM anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON agents TO authenticated;
+GRANT SELECT ON agent_runs TO authenticated;
 GRANT INSERT (agent_id, prompt) ON agent_runs TO authenticated;
 GRANT UPDATE (cancel_requested) ON agent_runs TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON agents, agent_runs TO service_role;
 
 -- When the web app cannot reach the worker, the run would otherwise sit in
 -- 'queued' forever. Owners cannot write status directly, so this function

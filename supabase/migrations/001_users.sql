@@ -42,3 +42,8 @@ ALTER TABLE users FORCE ROW LEVEL SECURITY;
 CREATE POLICY "users read their own row"
   ON users FOR SELECT TO authenticated
   USING (clerk_user_id = (SELECT auth.jwt()->>'sub'));
+
+-- Tables are not exposed to the Data API by default; grant what each role
+-- needs. service_role (the secret key) administers every table.
+GRANT SELECT ON users TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON users TO service_role;

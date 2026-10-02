@@ -45,6 +45,9 @@ CREATE POLICY "owners delete files"
   ON files FOR DELETE TO authenticated
   USING ((SELECT current_app_user_id()) = user_id);
 
+GRANT SELECT, INSERT, DELETE ON files TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON files TO service_role;
+
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES (
   'uploads',

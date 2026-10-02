@@ -77,3 +77,7 @@ CREATE POLICY "owners insert chat messages"
     (SELECT current_app_user_id()) = user_id
     AND chat_id IN (SELECT id FROM chats)
   );
+
+GRANT SELECT, INSERT, DELETE ON chats TO authenticated;
+GRANT SELECT, INSERT ON chat_messages TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON chats, chat_messages TO service_role;

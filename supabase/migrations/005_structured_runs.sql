@@ -43,3 +43,6 @@ CREATE POLICY "owners read structured runs"
 CREATE POLICY "owners insert structured runs"
   ON structured_runs FOR INSERT TO authenticated
   WITH CHECK ((SELECT current_app_user_id()) = user_id);
+
+GRANT SELECT, INSERT ON structured_runs TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON structured_runs TO service_role;
