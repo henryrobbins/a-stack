@@ -1,0 +1,8 @@
+{
+  "python.defaultInterpreterPath": "./api/.venv/bin/python",
+  "biome.configurationPath": "./web/biome.json",
+  "editor.defaultFormatter": "biomejs.biome",
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  }
+}

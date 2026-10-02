@@ -1,0 +1,122 @@
+name: CI - Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "supabase/**"
+      - ".github/workflows/ci-web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "supabase/**"
+      - ".github/workflows/ci-web.yml"
+
+defaults:
+  run:
+    working-directory: web
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+
+  test:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase
+        working-directory: supabase
+        run: |
+          echo "CLERK_DOMAIN=${{ vars.CLERK_DOMAIN }}" > .env
+          supabase start
+      - run: bun install --frozen-lockfile
+      - name: Write .env.test
+        run: |
+          STATUS=$(cd ../supabase && supabase status -o json)
+          {
+            echo "NEXT_PUBLIC_SUPABASE_URL=$(echo "$STATUS" | jq -r .API_URL)"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$(echo "$STATUS" | jq -r .PUBLISHABLE_KEY)"
+            echo "SUPABASE_SECRET_KEY=$(echo "$STATUS" | jq -r .SECRET_KEY)"
+            echo "SUPABASE_JWT_SECRET=$(echo "$STATUS" | jq -r .JWT_SECRET)"
+            echo "CLERK_WEBHOOK_SIGNING_SECRET=whsec_$(openssl rand -base64 32)"
+          } > .env.test
+      - run: bun run test
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+      - uses: astral-sh/setup-uv@v6
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase
+        working-directory: supabase
+        run: |
+          echo "CLERK_DOMAIN=${{ vars.CLERK_DOMAIN }}" > .env
+          supabase start
+      - run: bun install --frozen-lockfile
+      - run: bunx playwright install chromium --with-deps
+      - name: Install API
+        working-directory: api
+        run: uv sync --frozen
+      - name: Write env files
+        env:
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          E2E_TEST_EMAIL: ${{ secrets.E2E_TEST_EMAIL }}
+        run: |
+          STATUS=$(cd ../supabase && supabase status -o json)
+          URL=$(echo "$STATUS" | jq -r .API_URL)
+          PUBLISHABLE=$(echo "$STATUS" | jq -r .PUBLISHABLE_KEY)
+          SECRET=$(echo "$STATUS" | jq -r .SECRET_KEY)
+          {
+            echo "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ vars.CLERK_PUBLISHABLE_KEY }}"
+            echo "CLERK_SECRET_KEY=$CLERK_SECRET_KEY"
+            echo "NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in"
+            echo "NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up"
+            echo "NEXT_PUBLIC_SUPABASE_URL=$URL"
+            echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE"
+            echo "SUPABASE_SECRET_KEY=$SECRET"
+          } > .env
+          cp .env .env.e2e
+          echo "E2E_TEST_EMAIL=$E2E_TEST_EMAIL" >> .env.e2e
+          {
+            echo "CLERK_JWKS_URL=https://${{ vars.CLERK_DOMAIN }}/.well-known/jwks.json"
+            echo "SUPABASE_URL=$URL"
+            echo "SUPABASE_PUBLISHABLE_KEY=$PUBLISHABLE"
+            echo "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
+          } > ../api/.env
+      - run: bun run test:e2e
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright
+          path: |
+            web/test-results/
+            web/playwright-report/
+          retention-days: 7

@@ -1,0 +1,84 @@
+name: CI - API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "supabase/**"
+      - ".github/workflows/ci-api.yml"
+  pull_request:
+    paths:
+      - "api/**"
+      - "supabase/**"
+      - ".github/workflows/ci-api.yml"
+
+defaults:
+  run:
+    working-directory: api
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff check app/ tests/
+
+  format:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff format --check app/ tests/
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+      - run: uv sync --frozen
+      - run: uv run mypy app/ tests/
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: api/uv.lock
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Start Supabase
+        working-directory: supabase
+        run: |
+          echo "CLERK_DOMAIN=${{ vars.CLERK_DOMAIN }}" > .env
+          supabase start
+      - run: uv sync --frozen
+      - name: Export Supabase settings
+        run: |
+          STATUS=$(cd ../supabase && supabase status -o json)
+          {
+            echo "SUPABASE_URL=$(echo "$STATUS" | jq -r .API_URL)"
+            echo "SUPABASE_PUBLISHABLE_KEY=$(echo "$STATUS" | jq -r .PUBLISHABLE_KEY)"
+            echo "SUPABASE_SECRET_KEY=$(echo "$STATUS" | jq -r .SECRET_KEY)"
+            echo "SUPABASE_JWT_SECRET=$(echo "$STATUS" | jq -r .JWT_SECRET)"
+          } >> "$GITHUB_ENV"
+      - run: uv run pytest tests/ -v

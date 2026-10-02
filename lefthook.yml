@@ -1,0 +1,36 @@
+# Install once per clone: `lefthook install` (or `bunx lefthook install`).
+pre-commit:
+  parallel: true
+  commands:
+    web-lint:
+      root: "web/"
+      glob: "*.{ts,tsx,js,jsx,json,css}"
+      run: bunx biome check --no-errors-on-unmatched --diagnostic-level=error {staged_files}
+    web-typecheck:
+      root: "web/"
+      glob: "*.{ts,tsx}"
+      run: bun run typecheck
+    api-lint:
+      root: "api/"
+      glob: "*.py"
+      run: uv run ruff check {staged_files}
+    api-format:
+      root: "api/"
+      glob: "*.py"
+      run: uv run ruff format --check {staged_files}
+    api-typecheck:
+      root: "api/"
+      glob: "*.py"
+      run: uv run mypy app/ tests/
+    agent-lint:
+      root: "agent/"
+      glob: "*.py"
+      run: uv run ruff check {staged_files}
+    agent-format:
+      root: "agent/"
+      glob: "*.py"
+      run: uv run ruff format --check {staged_files}
+    agent-typecheck:
+      root: "agent/"
+      glob: "*.py"
+      run: uv run mypy agent/ tests/
