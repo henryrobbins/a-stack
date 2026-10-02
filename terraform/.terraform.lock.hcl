@@ -5,7 +5,9 @@ provider "registry.terraform.io/cloudflare/cloudflare" {
   version     = "5.26.0"
   constraints = "~> 5.26"
   hashes = [
+    "h1:cn9FioXphqL0gQ9ICt+nhylZm6GBWPm10v20nOQeqgg=",
     "h1:lRQqwQ3ZeXM50BBP/GX6762mqRQqLaRv9zdbpUmlycU=",
+    "h1:nFe2g1b1IlyrjelclCpPqxBsPdWv7AzWjjNlDbad6CY=",
     "zh:5935d0ea1abc7cfeeb6f6c80b1b5c51c2d72f11e3d0ee273a9bd6267c0821e6d",
     "zh:759bb1cc0e6daeb54def90f13357e8d09ed0ff7101d13726be9f42504d6ffad2",
     "zh:7e109aa1e20dccef154b680363451e9197ed31ece5bd91b53b0a1a512943b852",
@@ -22,7 +24,9 @@ provider "registry.terraform.io/supabase/supabase" {
   version     = "1.11.0"
   constraints = "~> 1.11"
   hashes = [
+    "h1:GvDcWIiIyDBy1Pk9AzPU1aSYL+D2BmZ2Wo2uIDl65tU=",
     "h1:IkC3UFXO7ZKHTqxD/bRC1G2spk9STS9aMySovlnsgWk=",
+    "h1:mDVpJYRuusLfhe7Dvi07z8VHKjx8twb6UaPU+G0TnNY=",
     "zh:1ab83aeade6c2f90359a443fa29fb50b805f87f10a3aef659a1757a3ef2718dc",
     "zh:32312e7db1b4351cf634c0033014d31a6fb465d542f7d18de86f9135f514e87c",
     "zh:442da094264caaf99a05917708cc0361b9f615f6c45734d90087825fa10f2289",
@@ -44,6 +48,8 @@ provider "registry.terraform.io/vercel/vercel" {
   version     = "5.18.0"
   constraints = "~> 5.18"
   hashes = [
+    "h1:2o8wk4MI0gLVopeoJYfFmLhFcf4X0HnWHuxEf51YGJ4=",
+    "h1:IMN0ZLjjslSbWVD24kcKll4jEnMRVraQAMIRv1Heagw=",
     "h1:Yeuw+JNwmaekDzyvTEU6tSQ8AmctkylIfDQObuHXQBE=",
     "zh:3999036361d02ea1ca1d13e87d814024f1bede2b6136bac1df0941fd756fd452",
     "zh:65d66ae7595d6477c4a682a5ba94f1f07f8c39bd0d405d8b5cdcb9a0cf4d401b",
