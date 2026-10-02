@@ -54,6 +54,8 @@ resource "vercel_project_domain" "root" {
 }
 
 resource "vercel_project_domain" "www" {
+  count = local.is_apex ? 1 : 0
+
   project_id = vercel_project.main.id
   domain     = "www.${var.domain}"
 }

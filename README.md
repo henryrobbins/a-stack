@@ -120,7 +120,9 @@ in `terraform/secrets.auto.tfvars` (git-ignored; copy the `.example`, which
 lists the scopes each token needs). Terraform pushes them on to Vercel and
 Supabase, so production values are never set in the app env files.
 
-1. **Prerequisites.** A domain on Cloudflare; the GitHub repository with the
+1. **Prerequisites.** A domain whose DNS is on Cloudflare (the app can live
+   at its apex or a subdomain, e.g. `app.example.com`; Cloudflare manages
+   whole domains, so the parent's nameservers must point to it); the GitHub repository with the
    Vercel GitHub app installed; a Supabase organization; a Clerk production
    instance for the domain; a Modal workspace; an Anthropic API key.
 
@@ -139,8 +141,8 @@ Supabase, so production values are never set in the app env files.
    `supabase_access_token`, `cloudflare_api_token`, a new
    `supabase_database_password`, `anthropic_api_key`, and a fresh
    `agent_trigger_secret` (`openssl rand -hex 32`). In `terraform.tfvars`,
-   set `domain`, `github_repo`, `cloudflare_zone_id`, and
-   `supabase_organization_id`.
+   set `domain`, `github_repo`, `cloudflare_zone_id` (of the parent domain
+   when `domain` is a subdomain), and `supabase_organization_id`.
 
 4. **Agent service.** Deploy once to learn the trigger URL:
    ```bash

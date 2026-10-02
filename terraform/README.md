@@ -2,7 +2,9 @@
 
 Provisions production: the **Vercel** project (Next.js and FastAPI as Vercel
 Services), the **Supabase** project with its secret key and Clerk third-party
-auth, and **Cloudflare** DNS for Vercel and Clerk. State is local.
+auth, and **Cloudflare** DNS for Vercel and Clerk. `domain` may be the zone
+apex (which also gets a `www` alias) or a subdomain of the zone. State is
+local.
 
 ## Files
 

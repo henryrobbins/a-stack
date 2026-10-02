@@ -8,7 +8,7 @@ variable "project_name" {
 }
 
 variable "domain" {
-  description = "Root domain of the application, managed in Cloudflare"
+  description = "Domain of the application: a Cloudflare zone apex or a subdomain of one"
   type        = string
 }
 
