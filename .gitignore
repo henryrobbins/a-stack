@@ -1,0 +1,9 @@
+# References to related projects
+refs
+
+# Environment files
+.env
+.env*.local
+
+# OS
+.DS_Store
