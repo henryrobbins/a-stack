@@ -1,0 +1,245 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * Design system: monochrome, hairline-ruled, typographically driven. No
+ * border radius, no shadows (except the lift on a hovered grid cell), no
+ * accent color. See DESIGN.md.
+ *
+ * Two kinds of rule: `line` separates major sections, `hair` separates rows
+ * and grid cells. Never both on the same edge.
+ */
+
+@theme {
+  --color-bg: #ffffff;
+  --color-ink: #111111;
+  --color-muted: #6b6b68;
+  --color-line: #111111;
+  --color-hair: #dcdcda;
+  --color-link: #cfcfcc;
+
+  --font-sans: var(--font-public-sans), system-ui, -apple-system, sans-serif;
+  --font-mono:
+    var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Horizontal padding of the content column: prose uses the wider value,
+     label bars and the rows beneath them share the narrower one. */
+  --spacing-pad: 24px;
+  --spacing-pad-wide: 44px;
+
+  --radius: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+/* shadcn semantic colors, mapped onto the tokens above. */
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-bg);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-bg);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-ink);
+  --color-primary-foreground: var(--color-bg);
+  --color-secondary: var(--color-bg);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted-foreground: var(--color-muted);
+  --color-accent: var(--color-bg);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-ink);
+  --color-border: var(--color-hair);
+  --color-input: var(--color-hair);
+  --color-ring: var(--color-ink);
+}
+
+@media (max-width: 899px) {
+  :root {
+    --spacing-pad: 20px;
+    --spacing-pad-wide: 20px;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-hair outline-ink/40;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg font-sans text-ink;
+    font-size: 16px;
+    font-weight: 300;
+  }
+
+  /*
+   * Links thicken under the cursor. `-webkit-text-stroke` leaves glyph
+   * advance widths alone, so a link mid-paragraph does not reflow the line
+   * the way a font-weight change would. Set in `em` so small mono labels are
+   * not stroked as heavily as body text.
+   */
+  @media (hover: hover) {
+    a:hover,
+    button:hover {
+      -webkit-text-stroke: 0.045em currentColor;
+    }
+  }
+}
+
+@layer components {
+  .label-bar {
+    @apply border-y border-line px-pad py-[13px] font-mono text-xs text-muted uppercase;
+    letter-spacing: 0.16em;
+    /* Collapse the top rule onto the rule the preceding block drew, so a
+       section boundary never renders as two stacked lines. */
+    margin-top: -1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .row {
+    @apply grid grid-cols-[1fr_auto] items-baseline gap-4 border-b border-hair px-pad py-[18px];
+  }
+
+  .row-title {
+    @apply font-medium;
+  }
+
+  .row-meta {
+    @apply text-right font-mono text-[13px] text-muted;
+  }
+
+  .row-arrow {
+    @apply ml-2 inline-block font-mono text-[13px] text-muted;
+    transition:
+      transform 160ms ease,
+      color 160ms ease;
+  }
+
+  @media (hover: hover) {
+    /* Only the title and the arrow answer the cursor, not the whole row. */
+    a.row:hover {
+      -webkit-text-stroke: 0;
+    }
+
+    a.row:hover .row-title {
+      -webkit-text-stroke: 0.045em currentColor;
+    }
+
+    a.row:hover .row-arrow {
+      @apply text-ink;
+      transform: translateX(4px);
+    }
+  }
+
+  .cell-grid {
+    @apply grid grid-cols-1 min-[900px]:grid-cols-3;
+  }
+
+  .cell {
+    @apply relative flex min-h-[150px] flex-col gap-3.5 border-r border-b border-hair bg-bg p-5;
+  }
+
+  @media (hover: hover) {
+    /* A hovered cell lifts out of the sheet: an opaque ground, an outline
+       closing the two edges its neighbours draw, and just enough shadow to
+       separate it from the plane of rules. */
+    a.cell {
+      transition:
+        transform 160ms ease,
+        box-shadow 160ms ease;
+    }
+
+    a.cell:hover {
+      transform: scale(1.03);
+      z-index: 2;
+      outline: 1px solid var(--color-hair);
+      outline-offset: -1px;
+      box-shadow: 0 2px 10px rgb(17 17 17 / 0.06);
+      -webkit-text-stroke: 0;
+    }
+  }
+
+  .data-table {
+    @apply w-full border-collapse text-sm;
+  }
+
+  .data-table th {
+    @apply border-b border-line px-pad py-3 text-left font-mono text-xs font-normal text-muted uppercase;
+    letter-spacing: 0.16em;
+  }
+
+  .data-table td {
+    @apply border-b border-hair px-pad py-3 align-baseline;
+  }
+
+  .data-table td.num,
+  .data-table th.num {
+    @apply text-right font-mono tabular-nums;
+  }
+
+  .prose {
+    font-size: 16.5px;
+    line-height: 1.72;
+  }
+
+  .prose > * + * {
+    margin-top: 18px;
+  }
+
+  .prose a {
+    @apply border-b border-link;
+  }
+
+  .prose h2,
+  .prose h3 {
+    @apply mt-8 font-mono text-xs font-normal text-muted uppercase;
+    letter-spacing: 0.16em;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply pl-5;
+  }
+
+  .prose ul {
+    @apply list-disc;
+  }
+
+  .prose ol {
+    @apply list-decimal;
+  }
+
+  .prose code {
+    @apply font-mono text-[0.9em];
+  }
+
+  .prose pre {
+    @apply overflow-x-auto border border-hair p-4 font-mono text-[13px];
+  }
+
+  .mono-label {
+    @apply font-mono text-xs text-muted uppercase;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .row-arrow,
+  a.cell {
+    transition: none;
+  }
+}

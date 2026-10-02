@@ -1,0 +1,25 @@
+'use client';
+
+import { useSession } from '@clerk/nextjs';
+import { createClient } from '@supabase/supabase-js';
+import { useMemo } from 'react';
+
+import type { Database } from '@/types/database';
+
+/** Browser Supabase client acting as the signed-in Clerk user (RLS). */
+export function useSupabaseClient() {
+  const { session } = useSession();
+  return useMemo(
+    () =>
+      createClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+        {
+          async accessToken() {
+            return (await session?.getToken()) ?? null;
+          },
+        }
+      ),
+    [session]
+  );
+}
