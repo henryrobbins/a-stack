@@ -1,0 +1,2 @@
+-- Local seed data, replayed by `supabase db reset`. Regenerate from the
+-- current local database with `make dump-seed`.

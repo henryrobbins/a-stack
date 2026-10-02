@@ -1,0 +1,54 @@
+# Local Supabase stack. Reference:
+# https://supabase.com/docs/guides/local-development/cli/config
+project_id = "a-stack"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+api_url = "http://127.0.0.1"
+
+[inbucket]
+enabled = false
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+jwt_expiry = 3600
+enable_signup = false
+
+# Trust session tokens issued by the Clerk development instance, so RLS sees
+# the Clerk user id as auth.jwt()->>'sub'. Set CLERK_DOMAIN (e.g.
+# `your-app-12.clerk.accounts.dev`, from https://clerk.com/setup/supabase) in
+# the shell before `supabase start`.
+[auth.third_party.clerk]
+enabled = true
+domain = "env(CLERK_DOMAIN)"
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false

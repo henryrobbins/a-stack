@@ -1,0 +1,6 @@
+# Supabase CLI local state
+.branches
+.temp
+
+# Production credentials for the Makefile push targets
+.env
