@@ -105,15 +105,22 @@ Local development needs only steps 1–5; CI and production build on them.
 ### CI
 
 The workflows start local Supabase and run the Playwright suite, so the
-GitHub repository needs the Clerk development instance and the test user:
+GitHub repository needs the Clerk development instance and the test user.
+Without them every job fails at `supabase start`. Once steps 2 and 4 are
+done, copy the values from the env files:
 
 ```bash
-gh variable set CLERK_DOMAIN          --body your-app-12.clerk.accounts.dev
-gh variable set CLERK_PUBLISHABLE_KEY --body pk_test_...
-gh secret set CLERK_SECRET_KEY        # sk_test_..., prompted
-gh secret set E2E_TEST_EMAIL
-gh secret set ANTHROPIC_API_KEY
+val() { grep -E "^$1=" "$2" | cut -d= -f2- | tr -d '\n'; }
+gh variable set CLERK_DOMAIN          --body "$(val CLERK_DOMAIN supabase/.env)"
+gh variable set CLERK_PUBLISHABLE_KEY --body "$(val NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY web/.env)"
+val CLERK_SECRET_KEY  web/.env     | gh secret set CLERK_SECRET_KEY
+val E2E_TEST_EMAIL    web/.env.e2e | gh secret set E2E_TEST_EMAIL
+val ANTHROPIC_API_KEY api/.env     | gh secret set ANTHROPIC_API_KEY
+gh variable list && gh secret list
 ```
+
+Workflows run only when their package, `supabase/`, or the workflow itself
+changes, so a docs-only push triggers no CI.
 
 ### Production
 
@@ -234,6 +241,6 @@ local development setup first: step 4 uses `agent/.env`.
 | Agent runs fail with 401 | The Modal secret's `AGENT_TRIGGER_SECRET` differs from Vercel's; rerun step 7's agent commands. |
 | `Failed to link <repo>. You need to add a Login Connection` | Vercel has no GitHub login connection (step 1). |
 | `Fetching of the JWT signing keys (JWKS)` on apply | Clerk's domain isn't verified yet (step 5). |
-| `auth.third_party.clerk has invalid domain` from the Supabase CLI | `CLERK_DOMAIN` in `supabase/.env` is malformed; it must be a bare host. |
+| `auth.third_party.clerk has invalid domain` from the Supabase CLI | `CLERK_DOMAIN` in `supabase/.env` is malformed; it must be a bare host. In CI, the `CLERK_DOMAIN` repository variable is missing (see [CI](#ci)). |
 
 See [terraform/README.md](terraform/README.md) for details.
