@@ -57,10 +57,20 @@ named by `CLERK_DOMAIN` in `supabase/.env` (`[auth.third_party.clerk]` in
 `config.toml`); in Clerk, enable the Supabase integration
 (<https://clerk.com/setup/supabase>) so tokens carry `role: authenticated`.
 
-Users rows are created by the Clerk webhook, which cannot reach localhost.
-Either expose it with a tunnel (`ngrok http 3000`, then register
-`https://<tunnel>/api/webhooks/clerk` for `user.created` and `user.deleted`
-and set `CLERK_WEBHOOK_SIGNING_SECRET`), or insert your row in Studio:
+Users rows are created by the Clerk webhook, which cannot reach localhost
+directly. Relay it with the Clerk CLI:
+
+```bash
+bunx clerk webhooks token     # once; keep the c_... token so the URL is stable
+bunx clerk webhooks listen --token c_... \
+  --forward-to http://localhost:3000/api/webhooks/clerk
+```
+
+In the development instance, add the printed relay URL
+(`https://webhooks.clerk.com/in/c_.../`) as a webhook endpoint for
+`user.created` and `user.deleted`, and put its signing secret in `web/.env`
+as `CLERK_WEBHOOK_SIGNING_SECRET`. Events arrive only while `listen` runs;
+Clerk retries missed ones. Without the relay, insert your row in Studio:
 `insert into users (clerk_user_id) values ('user_...')`.
 
 ### Agents on Modal

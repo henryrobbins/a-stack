@@ -66,10 +66,9 @@ Local development needs only steps 1–5; CI and production build on them.
      so session tokens carry `role: authenticated`.
    - Under **Users**, create a test user with an email address and put that
      address in `web/.env.e2e` as `E2E_TEST_EMAIL` (for Playwright).
-   - The Clerk webhook can't reach localhost; see
-     [DEVELOPMENT.md](DEVELOPMENT.md#clerk--supabase) for creating your own
-     `users` row. Leave `CLERK_WEBHOOK_SIGNING_SECRET` in `web/.env` empty
-     unless you use a tunnel.
+   - The Clerk webhook can't reach localhost; relay it with the Clerk CLI
+     and set `CLERK_WEBHOOK_SIGNING_SECRET` in `web/.env` (see
+     [DEVELOPMENT.md](DEVELOPMENT.md#clerk--supabase)).
 
 3. **Local Supabase.** Start it (it reads `CLERK_DOMAIN`), then copy keys
    from `supabase status -o env`:
