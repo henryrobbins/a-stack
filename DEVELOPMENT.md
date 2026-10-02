@@ -10,6 +10,8 @@ Everything runs locally against a local Supabase stack. You need only:
 - a **Modal account**, only to run agents on Modal rather than in-process.
 
 No Terraform state, deployment credentials, or production keys are needed.
+The [README](/README.md#setting-up-services-and-credentials) says where each
+value goes.
 
 ## Prerequisites
 
