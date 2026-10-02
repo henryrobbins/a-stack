@@ -3,7 +3,7 @@
 | Concern | Choice |
 |---|---|
 | Web | Next.js 16 (App Router, `proxy.ts`), React 19, Tailwind 4, shadcn/ui, bun |
-| Auth | Clerk (Core 3); Supabase trusts Clerk session tokens (third-party auth) |
+| Auth | Clerk 7 (Core 3); Supabase trusts Clerk session tokens (third-party auth) |
 | Database & files | Supabase Postgres (RLS everywhere) and Supabase Storage |
 | API | FastAPI on Vercel, served by Vercel Services under `/api/py` |
 | Agents | Modal app running the Claude Agent SDK |
@@ -34,8 +34,9 @@ Clerk ──webhook──▶ web/app/api/webhooks/clerk ──secret key──�
   bearer token. FastAPI verifies it against Clerk's JWKS (`api/app/auth.py`)
   and forwards the same token to Supabase (`api/app/deps.py`), so every API
   read and write is subject to RLS.
-- **Secret-key holders.** Exactly two: the Clerk webhook route in `web/` and
-  the Modal worker, which acts on behalf of a run rather than a live session.
+- **Secret-key users.** Only two pieces of code use the Supabase secret key:
+  the Clerk webhook route in `web/` and the Modal worker, which acts on behalf
+  of a run rather than a live session. The API never reads it.
 - **Uploads** go from the browser directly to Storage (avoiding Vercel's
   4.5 MB request body limit) at `{clerk_sub}/{uuid}-{filename}`; storage
   policies scope access by that first path segment.
@@ -113,9 +114,10 @@ with a header comment; every column is commented).
 
 ## Models
 
-Model ids are defined once per service: `api/app/config.py`,
-`agent/agent/config.py`, and `web/lib/models.ts`. The default is
-`claude-sonnet-5-5`; forms offer `claude-opus-5-5` and `claude-haiku-4-5`.
+The allowlist lives in `web/lib/models.ts` (forms) and `api/app/config.py`
+(validation). The default is `claude-sonnet-5-5`; forms also offer
+`claude-opus-5-5` and `claude-haiku-4-5`. Chats and agents store their model,
+so the agent worker uses `agents.model` and needs no list of its own.
 
 ## Infrastructure
 
@@ -125,5 +127,12 @@ secret key and Clerk third-party auth, and Cloudflare DNS for Vercel and
 Clerk. Not in Terraform: the Clerk instance and webhook registration
 (dashboard), and Modal secrets and deploys (`agent/Makefile`).
 
-**Known limitation:** preview deployments share production environment
-values, including the production database.
+**Known limitations:**
+
+- Preview deployments share production environment values, including the
+  production database.
+- Vercel Services share one project environment, so the FastAPI process also
+  receives `SUPABASE_SECRET_KEY`, `CLERK_SECRET_KEY`, and
+  `AGENT_TRIGGER_SECRET`, although its code never reads them. A compromise of
+  the API process could therefore bypass RLS. If that matters, host the Clerk
+  webhook outside this project.
