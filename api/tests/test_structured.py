@@ -111,3 +111,22 @@ async def test_unknown_model_is_rejected(
     assert res.status_code == 422
     assert fake.calls == []
     assert await runs_of(admin, user) == []
+
+
+async def test_unparseable_reply_is_saved_as_an_error(
+    client: AsyncClient, admin: SupabaseClient, make_user: MakeUser
+) -> None:
+    user = await make_user()
+    act_as(user)
+    # A reply cut off at max_tokens is not valid JSON.
+    use_anthropic(FakeAnthropic(text='{"name": "Ad'))
+
+    res = await client.post(
+        "/api/py/structured", json={"prompt": "Who?", "schema": SCHEMA}
+    )
+
+    assert res.status_code == 502
+    assert "not valid JSON" in res.json()["detail"]
+    [run] = await runs_of(admin, user)
+    assert run["output"] is None
+    assert "not valid JSON" in run["error"]

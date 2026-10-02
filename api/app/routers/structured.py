@@ -40,11 +40,14 @@ async def run_structured(
     supabase: AsyncClient = Depends(get_supabase),
     client: anthropic.AsyncAnthropic = Depends(get_anthropic_client),
 ) -> StructuredOut:
-    """Generate JSON that satisfies `schema`. A schema the API rejects is a 400."""
+    """Generate JSON that satisfies `schema`. A schema the API rejects is a 400;
+    an unparseable reply is a 502."""
     try:
         row = await structured.run(
             supabase, client, body.prompt, body.schema_, body.model
         )
     except structured.SchemaRejectedError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except structured.InvalidOutputError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
     return StructuredOut.model_validate(row)
