@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
-from app.routers import chat
+from app.routers import chat, structured
 
 app = FastAPI(title="a-stack-api")
 
@@ -15,5 +15,6 @@ async def health() -> dict[str, str]:
 
 
 api.include_router(chat.router)
+api.include_router(structured.router)
 
 app.include_router(api)
