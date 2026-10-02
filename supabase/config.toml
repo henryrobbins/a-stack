@@ -40,9 +40,8 @@ jwt_expiry = 3600
 enable_signup = false
 
 # Trust session tokens issued by the Clerk development instance, so RLS sees
-# the Clerk user id as auth.jwt()->>'sub'. Set CLERK_DOMAIN (e.g.
-# `your-app-12.clerk.accounts.dev`, from https://clerk.com/setup/supabase) in
-# the shell before `supabase start`.
+# the Clerk user id as auth.jwt()->>'sub'. CLERK_DOMAIN comes from
+# supabase/.env (see .env.example).
 [auth.third_party.clerk]
 enabled = true
 domain = "env(CLERK_DOMAIN)"
