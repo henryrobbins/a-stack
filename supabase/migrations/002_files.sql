@@ -37,9 +37,14 @@ CREATE POLICY "owners read files"
   ON files FOR SELECT TO authenticated
   USING ((SELECT current_app_user_id()) = user_id);
 
+-- The path must be in the caller's own folder: the agent worker reads objects
+-- by storage_path with the secret key, so a row must never point elsewhere.
 CREATE POLICY "owners insert files"
   ON files FOR INSERT TO authenticated
-  WITH CHECK ((SELECT current_app_user_id()) = user_id);
+  WITH CHECK (
+    (SELECT current_app_user_id()) = user_id
+    AND (storage.foldername(storage_path))[1] = (SELECT auth.jwt()->>'sub')
+  );
 
 CREATE POLICY "owners delete files"
   ON files FOR DELETE TO authenticated

@@ -77,4 +77,21 @@ describe('uploadFile', () => {
     ).rejects.toThrow('row-level security');
     expect(await fileCount(bob.id)).toBe(0);
   });
+
+  test('a files row cannot point into another user’s folder', async () => {
+    const alice = await newUser();
+    const bob = await newUser();
+
+    const { error } = await clientFor(bob.clerkId)
+      .from('files')
+      .insert({
+        name: 'stolen.txt',
+        content_type: 'text/plain',
+        size_bytes: 1,
+        storage_path: `${alice.clerkId}/stolen.txt`,
+      });
+
+    expect(error?.message).toContain('row-level security');
+    expect(await fileCount(bob.id)).toBe(0);
+  });
 });
