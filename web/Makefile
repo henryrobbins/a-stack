@@ -16,7 +16,7 @@ format:
 	bun run format
 
 typecheck:
-	bunx tsc --noEmit
+	bun run typecheck
 
 test:
 	bun run test

@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "db:types": "cd ../supabase && make types",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.10",
