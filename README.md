@@ -40,7 +40,7 @@ Then set up credentials as below and follow [DEVELOPMENT.md](DEVELOPMENT.md):
 ## Setting up services and credentials
 
 Every env file is git-ignored and starts from the `.env.example` beside it.
-Local development needs only steps 1–5; CI and production build on them.
+CI and production build on the local development steps.
 
 ### Local development
 
@@ -98,10 +98,6 @@ Local development needs only steps 1–5; CI and production build on them.
    ```
    Set `AGENT_TRIGGER_URL=http://localhost:8100` in `web/.env`.
 
-6. **Modal (optional).** Only needed to run agents on Modal instead of
-   in-process: `cd agent && uv run modal setup` to log in, then follow
-   [Agents on Modal](DEVELOPMENT.md#agents-on-modal).
-
 ### CI
 
 The workflows start local Supabase and run the Playwright suite, so the
@@ -129,7 +125,7 @@ Non-secret inputs go in `terraform/terraform.tfvars` (committed, so only
 public identifiers); secrets go in `terraform/secrets.auto.tfvars`
 (git-ignored; copy the `.example`). Terraform pushes them on to Vercel and
 Supabase, so production values are never set in the app env files. Finish
-local development setup first: step 4 uses `agent/.env`.
+local development setup first.
 
 1. **Accounts and access.**
    - **Domain on Cloudflare.** The app lives at the apex of a Cloudflare
@@ -183,7 +179,9 @@ local development setup first: step 4 uses `agent/.env`.
    Put the URL printed under `Created function trigger`
    (`https://<workspace>--a-stack-agent-trigger.modal.run`) in
    `terraform.tfvars` as `agent_trigger_url`. The `View Deployment` link is
-   the Modal dashboard, not the endpoint.
+   the Modal dashboard, not the endpoint. `make serve` runs the app on Modal
+   with live reload against this same secret, so its runs act on production
+   data.
 
 5. **Infrastructure.** Leave `clerk_webhook_signing_secret` empty for now.
    ```bash

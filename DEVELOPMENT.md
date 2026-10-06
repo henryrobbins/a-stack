@@ -6,8 +6,7 @@ Everything runs locally against a local Supabase stack. You need only:
 
 - a **Clerk development instance** (publishable and secret keys, and its
   domain),
-- an **Anthropic API key**,
-- a **Modal account**, only to run agents on Modal rather than in-process.
+- an **Anthropic API key**.
 
 No Terraform state, deployment credentials, or production keys are needed.
 The [README](/README.md#setting-up-services-and-credentials) says where each
@@ -71,13 +70,6 @@ endpoint for `user.created` and `user.deleted`, and put its signing secret in
 `web/.env` as `CLERK_WEBHOOK_SIGNING_SECRET`. Events arrive only while ngrok
 runs; Clerk retries missed ones. Without the relay, insert your row in Studio:
 `insert into users (clerk_user_id) values ('user_...')`.
-
-### Agents on Modal
-
-`make dev` in `agent/` is the local agent service; it reads `agent/.env`.
-Modal runs only production: its `a-stack-agent` secret comes from
-`agent/.env.production` (see the README's production setup). `make serve`
-uses that secret too, so runs it triggers act on production data.
 
 ## Environment files
 
