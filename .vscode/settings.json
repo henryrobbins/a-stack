@@ -1,5 +1,17 @@
 {
   "python.defaultInterpreterPath": "./api/.venv/bin/python",
+  "python-envs.pythonProjects": [
+    {
+      "path": "api",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    },
+    {
+      "path": "agent",
+      "envManager": "ms-python.python:venv",
+      "packageManager": "ms-python.python:pip"
+    }
+  ],
   "biome.configurationPath": "./web/biome.json",
   "editor.defaultFormatter": "biomejs.biome",
   "[python]": {
