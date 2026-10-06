@@ -2,19 +2,17 @@
 
 Provisions production: the **Vercel** project (Next.js and FastAPI as Vercel
 Services), the **Supabase** project with its secret key and Clerk third-party
-auth, and **Cloudflare** DNS for Vercel and Clerk. `domain` may be the zone
-apex (which also gets a `www` alias) or a subdomain of the zone. State is
-local.
+auth. The app is served at the project's `*.vercel.app` URL and Clerk runs
+a development instance, so there is no DNS to manage. State is local.
 
 ## Files
 
 | File | Purpose |
 |---|---|
-| `providers.tf` | vercel, supabase, cloudflare providers |
+| `providers.tf` | vercel, supabase providers |
 | `variables.tf` | Inputs; sensitive ones are marked |
-| `web.tf` | Vercel project, domains, environment variables |
+| `web.tf` | Vercel project, environment variables |
 | `database.tf` | Supabase project, secret key, Clerk third-party auth |
-| `dns.tf` | Cloudflare records (all unproxied) |
 | `outputs.tf` | Sensitive maps for `supabase/.env` and `agent/.env` |
 
 ## Variables

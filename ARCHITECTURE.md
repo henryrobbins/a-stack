@@ -8,7 +8,7 @@
 | API | FastAPI on Vercel, served by Vercel Services under `/api/py` |
 | Agents | Modal app running the Claude Agent SDK |
 | LLM | Anthropic Python SDK + Claude Agent SDK |
-| Infrastructure | Terraform: Vercel, Supabase, Cloudflare (local state) |
+| Infrastructure | Terraform: Vercel, Supabase (local state) |
 
 Production only — there is no staging environment.
 
@@ -123,14 +123,18 @@ so the agent worker uses `agents.model` and needs no list of its own.
 
 Terraform (`terraform/`) provisions the Vercel project (Services framework,
 Fluid compute, `iad1`, env vars), the Supabase project in `us-east-1` with its
-secret key and Clerk third-party auth, and Cloudflare DNS for Vercel and
-Clerk. Not in Terraform: the Clerk instance and webhook registration
-(dashboard), and Modal secrets and deploys (`agent/Makefile`).
+secret key and Clerk third-party auth. The app is served at the project's
+`*.vercel.app` URL, so there is no DNS to manage. Not in Terraform: the Clerk
+instance and webhook registration (dashboard), and Modal secrets and deploys
+(`agent/Makefile`).
 
 ![Keys in production](/docs/keys-production.svg)
 
 **Known limitations:**
 
+- `*.vercel.app` can't host a Clerk production instance, so production runs
+  on a Clerk development instance, with its user cap and development-mode
+  badge. Moving to a production instance requires a custom domain.
 - Preview deployments share production environment values, including the
   production database.
 - Vercel Services share one project environment, so the FastAPI process also

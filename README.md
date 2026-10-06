@@ -132,41 +132,37 @@ Supabase, so production values are never set in the app env files. Finish
 local development setup first: step 4 uses `agent/.env`.
 
 1. **Accounts and access.**
-   - **Domain on Cloudflare.** The app lives at the apex of a Cloudflare
-     zone or at a subdomain of it (e.g. `app.example.com`). Cloudflare
-     manages whole domains, so the parent domain's nameservers must point to
-     Cloudflare.
    - **GitHub and Vercel.** Push the repository to GitHub. In Vercel, connect
      GitHub under **Account Settings → Authentication** (without this login
      connection Vercel cannot link the repository), and give the Vercel
      GitHub app access to the repository
      (<https://github.com/settings/installations>).
-   - **Clerk production instance** whose domain is the app's domain. Its
-     Frontend API is then `clerk.<domain>`, which Terraform assumes.
+   - **Clerk development instance** for the deployed app. The app is served
+     at `https://<project_name>.vercel.app` (Vercel adds a suffix if the name
+     is taken; see the project's **Domains**), and Clerk production
+     instances can't run on `*.vercel.app`. A separate Clerk application
+     keeps deployed users apart from local ones.
    - A Supabase organization, a Modal workspace, and an Anthropic API key.
 
-2. **Clerk production instance.**
+2. **Clerk development instance.** Open **Configure → API keys**.
 
    | Clerk value | Goes in |
    |---|---|
-   | Publishable key (`pk_live_…`) | `terraform.tfvars`: `clerk_publishable_key` |
-   | Secret key (`sk_live_…`) | `secrets.auto.tfvars`: `clerk_secret_key` |
-   | **Domains**: the id in `dkim1.<id>.clerk.services` | `terraform.tfvars`: `clerk_dkim_id` |
+   | Publishable key (`pk_test_…`) | `terraform.tfvars`: `clerk_publishable_key` |
+   | Secret key (`sk_test_…`) | `secrets.auto.tfvars`: `clerk_secret_key` |
+   | Frontend API URL, without `https://` (`your-app-12.clerk.accounts.dev`) | `terraform.tfvars`: `clerk_domain` |
 
    Enable the Supabase integration (<https://clerk.com/setup/supabase>) on
-   the production instance too.
+   this instance too.
 
 3. **Other inputs.**
 
    | Value | Where to get it | Goes in |
    |---|---|---|
-   | `domain` | e.g. `app.example.com` | `terraform.tfvars` |
    | `github_repo` | `owner/name` | `terraform.tfvars` |
-   | `cloudflare_zone_id` | Cloudflare → the (parent) domain → Overview | `terraform.tfvars` |
    | `supabase_organization_id` | Supabase → Organization settings → slug | `terraform.tfvars` |
    | `vercel_api_token` | Vercel → Account Settings → Tokens, scoped to the team that will own the project | `secrets.auto.tfvars` |
    | `supabase_access_token` | Supabase → Account → Access tokens (`sbp_…`) | `secrets.auto.tfvars` |
-   | `cloudflare_api_token` | Cloudflare → My profile → API tokens: **Zone → Zone → Read** and **Zone → DNS → Edit** on the zone | `secrets.auto.tfvars` |
    | `anthropic_api_key` | Anthropic console (a separate production key is easier to track and revoke) | `secrets.auto.tfvars` |
    | `supabase_database_password` | `openssl rand -base64 32 \| tr -d '/+='` | `secrets.auto.tfvars` |
    | `agent_trigger_secret` | `openssl rand -hex 32` | `secrets.auto.tfvars` |
@@ -190,16 +186,9 @@ local development setup first: step 4 uses `agent/.env`.
    cd terraform
    terraform init && terraform apply
    ```
-   The first apply creates Clerk's DNS records, then fails on
-   `supabase_third_party_auth.clerk` ("Fetching of the JWT signing keys
-   (JWKS) … failed"): Supabase cannot reach `clerk.<domain>` until Clerk has
-   verified the records and issued certificates. Wait until Clerk →
-   **Domains** shows everything verified, then apply again. If it still
-   fails, resolvers may have cached the name as missing; wait up to 30
-   minutes and retry.
 
-6. **Clerk webhook.** In the production instance, add the endpoint
-   `https://<domain>/api/webhooks/clerk` for `user.created` and
+6. **Clerk webhook.** In the Clerk instance, add the endpoint
+   `https://<project_name>.vercel.app/api/webhooks/clerk` for `user.created` and
    `user.deleted`. Put its signing secret in `secrets.auto.tfvars` as
    `clerk_webhook_signing_secret` and `terraform apply` again.
 
@@ -241,7 +230,7 @@ local development setup first: step 4 uses `agent/.env`.
 |---|---|
 | Agent runs fail with 401 | The Modal secret's `AGENT_TRIGGER_SECRET` differs from Vercel's; rerun step 7's agent commands. |
 | `Failed to link <repo>. You need to add a Login Connection` | Vercel has no GitHub login connection (step 1). |
-| `Fetching of the JWT signing keys (JWKS)` on apply | Clerk's domain isn't verified yet (step 5). |
+| `Fetching of the JWT signing keys (JWKS)` on apply | `clerk_domain` is wrong; it must be the bare Frontend API host (step 2). |
 | `auth.third_party.clerk has invalid domain` from the Supabase CLI | `CLERK_DOMAIN` in `supabase/.env` is malformed; it must be a bare host. In CI, the `CLERK_DOMAIN` repository variable is missing (see [CI](#ci)). |
 
 See [terraform/README.md](terraform/README.md) for details.

@@ -1,9 +1,10 @@
 # One Vercel project serving both services in vercel.json: the Next.js app
 # and the FastAPI app under /api/py. Preview deployments share production
-# environment values (see ARCHITECTURE.md).
+# environment values (see ARCHITECTURE.md). The app is served at the
+# project's *.vercel.app URL, which Vercel assigns.
 
 locals {
-  clerk_issuer = "https://clerk.${var.domain}"
+  clerk_issuer = "https://${var.clerk_domain}"
   supabase_url = "https://${supabase_project.main.id}.supabase.co"
   # Public by design; the provider marks every key sensitive.
   supabase_publishable_key = nonsensitive(data.supabase_apikeys.main.publishable_key)
@@ -46,18 +47,6 @@ resource "vercel_project" "main" {
     # Long enough for streamed chat replies.
     function_default_timeout = 300
   }
-}
-
-resource "vercel_project_domain" "root" {
-  project_id = vercel_project.main.id
-  domain     = var.domain
-}
-
-resource "vercel_project_domain" "www" {
-  count = local.is_apex ? 1 : 0
-
-  project_id = vercel_project.main.id
-  domain     = "www.${var.domain}"
 }
 
 resource "vercel_project_environment_variable" "public" {
