@@ -24,7 +24,7 @@ means deleting demo code, not assembling infrastructure.
 ├── api/          # FastAPI service under /api/py (chat, structured output)
 ├── agent/        # Modal app: trigger endpoint + Agent SDK worker
 ├── supabase/     # config.toml, migrations, seed, Makefile
-├── terraform/    # Vercel, Supabase, Cloudflare
+├── terraform/    # Vercel, Supabase
 └── vercel.json   # Vercel Services: web + api in one project
 ```
 

@@ -10,10 +10,6 @@ terraform {
       source  = "supabase/supabase"
       version = "~> 1.11"
     }
-    cloudflare = {
-      source  = "cloudflare/cloudflare"
-      version = "~> 5.26"
-    }
   }
 }
 
@@ -23,8 +19,4 @@ provider "vercel" {
 
 provider "supabase" {
   access_token = var.supabase_access_token
-}
-
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
 }

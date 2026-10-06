@@ -7,18 +7,8 @@ variable "project_name" {
   type        = string
 }
 
-variable "domain" {
-  description = "Domain of the application: a Cloudflare zone apex or a subdomain of one"
-  type        = string
-}
-
 variable "github_repo" {
   description = "GitHub repository (owner/name) connected to Vercel"
-  type        = string
-}
-
-variable "cloudflare_zone_id" {
-  description = "Cloudflare zone ID for the domain"
   type        = string
 }
 
@@ -34,12 +24,12 @@ variable "supabase_region" {
 }
 
 variable "clerk_publishable_key" {
-  description = "Clerk production publishable key (pk_live_...)"
+  description = "Clerk development publishable key (pk_test_...)"
   type        = string
 }
 
-variable "clerk_dkim_id" {
-  description = "Instance id in the DKIM targets Clerk shows for the production domain (e.g. abc123 in dkim1.abc123.clerk.services)"
+variable "clerk_domain" {
+  description = "Clerk Frontend API host, without https:// (e.g. your-app-12.clerk.accounts.dev)"
   type        = string
 }
 
@@ -64,12 +54,6 @@ variable "supabase_access_token" {
   sensitive   = true
 }
 
-variable "cloudflare_api_token" {
-  description = "Cloudflare API token with Zone.DNS edit permission"
-  type        = string
-  sensitive   = true
-}
-
 variable "supabase_database_password" {
   description = "Postgres password for the Supabase project"
   type        = string
@@ -77,7 +61,7 @@ variable "supabase_database_password" {
 }
 
 variable "clerk_secret_key" {
-  description = "Clerk production secret key (sk_live_...)"
+  description = "Clerk development secret key (sk_test_...)"
   type        = string
   sensitive   = true
 }
