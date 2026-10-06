@@ -1,6 +1,3 @@
-# References to related projects
-refs
-
 # Environment files
 .env
 .env*.local

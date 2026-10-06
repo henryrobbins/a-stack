@@ -25,8 +25,7 @@ means deleting demo code, not assembling infrastructure.
 ├── agent/        # Modal app: trigger endpoint + Agent SDK worker
 ├── supabase/     # config.toml, migrations, seed, Makefile
 ├── terraform/    # Vercel, Supabase, Cloudflare
-├── vercel.json   # Vercel Services: web + api in one project
-└── refs/         # git-ignored symlinks to reference projects (read-only)
+└── vercel.json   # Vercel Services: web + api in one project
 ```
 
 ## Architecture
