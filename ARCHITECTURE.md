@@ -127,6 +127,8 @@ secret key and Clerk third-party auth, and Cloudflare DNS for Vercel and
 Clerk. Not in Terraform: the Clerk instance and webhook registration
 (dashboard), and Modal secrets and deploys (`agent/Makefile`).
 
+![Keys in production](/docs/keys-production.svg)
+
 **Known limitations:**
 
 - Preview deployments share production environment values, including the

@@ -81,6 +81,8 @@ uses that secret too, so runs it triggers act on production data.
 
 ## Environment files
 
+![Keys in local development](/docs/keys-local.svg)
+
 | File | Used by | Template |
 |---|---|---|
 | `supabase/.env` | Supabase CLI, `make push-production` | `supabase/.env.example` |
