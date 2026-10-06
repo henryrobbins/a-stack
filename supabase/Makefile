@@ -16,5 +16,7 @@ push-production:
 types:
 	supabase gen types typescript --local --schema public > ../web/types/database.ts
 
+# The CLI changes into the project root (the parent of supabase/) before
+# resolving -f.
 dump-seed:
-	supabase db dump --local --data-only -f seed.sql
+	supabase db dump --local --data-only -f supabase/seed.sql
