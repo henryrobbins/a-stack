@@ -172,11 +172,12 @@ local development setup first: step 4 uses `agent/.env`.
    | `agent_trigger_secret` | `openssl rand -hex 32` | `secrets.auto.tfvars` |
 
 4. **Agent service.** Deploy once to learn the trigger URL. The Modal secret
-   must exist to deploy, so this uploads your local `agent/.env` as a
-   placeholder; step 7 replaces it.
+   must exist to deploy, so this uploads an empty `agent/.env.production` as a
+   placeholder; step 7 fills it in.
    ```bash
    cd agent
    uv run modal setup                # once per machine
+   cp .env.production.example .env.production
    make secrets && make deploy
    ```
    Put the URL printed under `Created function trigger`
@@ -205,7 +206,7 @@ local development setup first: step 4 uses `agent/.env`.
 7. **Agent secret and database.** From `terraform/`:
    ```bash
    terraform output -json agent_env | jq -r 'to_entries[] | "\(.key)=\(.value)"' > ../agent/.env.production
-   (cd ../agent && make secrets ENV_FILE=.env.production && make deploy)
+   (cd ../agent && make secrets && make deploy)
    ```
    `agent/.env.production` is git-ignored and keeps production values apart
    from your local `agent/.env`; redeploying starts containers with the new

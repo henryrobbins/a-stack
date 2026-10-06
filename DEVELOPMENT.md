@@ -74,11 +74,10 @@ runs; Clerk retries missed ones. Without the relay, insert your row in Studio:
 
 ### Agents on Modal
 
-`make dev` in `agent/` is enough for local work. To exercise the Modal
-deployment itself, point `agent/.env` at a Supabase project Modal can reach,
-run `make secrets` (creates the `a-stack-agent` Modal secret from `.env`),
-then `make serve` and copy the printed `trigger` URL into
-`web/.env` as `AGENT_TRIGGER_URL`.
+`make dev` in `agent/` is the local agent service; it reads `agent/.env`.
+Modal runs only production: its `a-stack-agent` secret comes from
+`agent/.env.production` (see the README's production setup). `make serve`
+uses that secret too, so runs it triggers act on production data.
 
 ## Environment files
 
@@ -89,7 +88,8 @@ then `make serve` and copy the printed `trigger` URL into
 | `web/.env.test` | Vitest | `web/.env.test.example` |
 | `web/.env.e2e` | Playwright | `web/.env.e2e.example` |
 | `api/.env` | FastAPI | `api/.env.example` |
-| `agent/.env` | local trigger, Modal secret | `agent/.env.example` |
+| `agent/.env` | `make dev` | `agent/.env.example` |
+| `agent/.env.production` | production Modal secret | `agent/.env.production.example` |
 
 Infrastructure secrets live only in `terraform/secrets.auto.tfvars`; see
 [terraform/README.md](/terraform/README.md).
